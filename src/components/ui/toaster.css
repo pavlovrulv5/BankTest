@@ -1,0 +1,30 @@
+.toaster-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.toast {
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
+  padding: 10px 20px;
+}
+
+.toast.success {
+  border-left: 5px solid green;
+}
+
+.toast.error {
+  border-left: 5px solid red;
+}
+
+.toast.warning {
+  border-left: 5px solid orange;
+}
+
+.toast p {
+  margin: 0;
+}
