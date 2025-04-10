@@ -1,28 +1,50 @@
 import { Card, Field, Input, Stack } from "@chakra-ui/react";
-import { PasswordInput } from "./password-input";
 import React, { useState } from "react";
 
-export const BankCardIn = () => {
-  const [cardNumber, setCardNumber] = useState("");
+export interface BankCardInProps {
+  cardData: {
+    cardNumber: string;
+  };
+  setCardData: (data: { cardNumber: string }) => void;
+  setIsValidate: (value: boolean) => void;
+}
+
+export const BankCardIn = ({
+  cardData,
+  setCardData,
+  setIsValidate,
+}: BankCardInProps) => {
   const [errors, setErrors] = useState({
     cardNumber: "",
   });
-  const handleCardNumberChange = (event) => {
-    const value = event.target.value.replace(/[^0-9]/g, "");
 
+  const handleCardNumberChange = (event: { target: { value: string } }) => {
+    const value = event.target.value.replace(/[^0-9]/g, "");
+    setIsValidate(true);
     const formattedValue =
       value
         .replace(/\s/g, "")
         .match(/.{1,4}/g)
         ?.join(" ") || "";
     const limitedValue = formattedValue.slice(0, 19);
+
     if (limitedValue.length < 19) {
+      setIsValidate(false);
       setErrors((prev) => ({
         ...prev,
         cardNumber: "Неверно указан номер карты",
       }));
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        cardNumber: "",
+      }));
     }
-    setCardNumber(limitedValue);
+
+    setCardData({
+      ...cardData,
+      cardNumber: limitedValue,
+    });
   };
 
   return (
@@ -34,7 +56,7 @@ export const BankCardIn = () => {
         <Stack gap="4" w="full">
           <Field.Root>
             <Input
-              value={cardNumber}
+              value={cardData.cardNumber}
               onChange={handleCardNumberChange}
               placeholder="Номер карты"
             />
