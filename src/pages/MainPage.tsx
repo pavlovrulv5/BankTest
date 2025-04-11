@@ -17,9 +17,11 @@ const MainPage = () => {
   const [recipientCard, setRecipientCard] = useState({
     cardNumber: "",
   });
-  const [isValidate, setIsValidate] = useState(false);
+  const [isFirstCardValidate, setIsFirstCardValidate] = useState(false);
+  const [isSecondCardValidate, setIsSecondCardValidate] = useState(false);
+
   return (
-    <Box w={"80vw"} h={"100vh"}>
+    <Box w={"100vw"} h={"100%"} bg={"white"}>
       <Header></Header>
       <Box
         display={"flex"}
@@ -33,15 +35,25 @@ const MainPage = () => {
           defaultValue={"BankCardOut"}
           flexDirection={"row"}
         >
-          <Flex w="100%" flexDirection={"row"}>
+          <Flex
+            w="100%"
+            display={"flex"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            flexDirection={["column", "column", "column", "row", "row"]}
+          >
             <Tabs.Content value="BankCardOut">
               <BankCardOut
                 cardData={senderCard}
                 setCardData={setSenderCard}
-                setIsValidate={setIsValidate}
+                setIsValidate={setIsFirstCardValidate}
               />
             </Tabs.Content>
-            <Box alignContent={"center"} padding={"50px"}>
+            <Box
+              paddingLeft={"50px"}
+              paddingRight={"50px"}
+              paddingTop={{ base: "15px" }}
+            >
               <Icon size={"2xl"}>
                 <FaArrowAltCircleRight />
               </Icon>
@@ -50,7 +62,7 @@ const MainPage = () => {
               <BankCardIn
                 cardData={recipientCard}
                 setCardData={setRecipientCard}
-                setIsValidate={setIsValidate}
+                setIsValidate={setIsSecondCardValidate}
               />
             </Tabs.Content>
           </Flex>
@@ -60,7 +72,10 @@ const MainPage = () => {
           recipientCard={recipientCard}
           setCardData={setSenderCard}
           setRecipientCardData={setRecipientCard}
-          globalIsValidate={isValidate}
+          firstValidate={isFirstCardValidate}
+          secondValidate={isSecondCardValidate}
+          setFirstValidate={setIsFirstCardValidate}
+          setSecondValidate={setIsSecondCardValidate}
         />
       </Box>
     </Box>

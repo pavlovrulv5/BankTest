@@ -4,7 +4,7 @@ import { Box } from "@chakra-ui/react";
 
 const TablePage = () => {
   return (
-    <Box w={"80vw"} h={"100vh"}>
+    <Box w={"100vw"} h={"100%"}>
       <Header></Header>
       <BankTable></BankTable>
     </Box>

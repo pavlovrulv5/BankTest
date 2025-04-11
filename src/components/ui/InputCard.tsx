@@ -1,5 +1,5 @@
 import { Button, Card, Field, Input } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTransactionStore } from "@/store/transactionsStore";
 import { toaster } from "@/components/ui/toaster";
 
@@ -20,7 +20,10 @@ export interface InputCardProps {
     expiryCvv: string;
   }) => void;
   setRecipientCardData: (data: { cardNumber: string }) => void;
-  globalIsValidate: boolean;
+  firstValidate: boolean;
+  secondValidate: boolean;
+  setFirstValidate: (value: boolean) => void;
+  setSecondValidate: (value: boolean) => void;
 }
 
 export const InputCard = ({
@@ -28,7 +31,10 @@ export const InputCard = ({
   recipientCard,
   setCardData,
   setRecipientCardData,
-  globalIsValidate,
+  firstValidate,
+  secondValidate,
+  setFirstValidate,
+  setSecondValidate,
 }: InputCardProps) => {
   const addTransaction = useTransactionStore((state) => state.addTransaction);
 
@@ -83,7 +89,7 @@ export const InputCard = ({
 
   const handleConfirm = () => {
     let isValidate = true;
-    if (!globalIsValidate) {
+    if (!firstValidate || !secondValidate) {
       isValidate = false;
       toaster.create({
         title: "Ошибка валидации",
@@ -103,7 +109,7 @@ export const InputCard = ({
         description: "Пожалуйста, введите сумму.",
         type: "warning",
       });
-      return; // Stop further processing
+      return;
     }
     if (amount.amount === 0) {
       isValidate = false;
@@ -114,11 +120,10 @@ export const InputCard = ({
       });
     }
     setErrors((prev) => ({
-      // If all ok, remove errors
       ...prev,
       amount: "",
     }));
-    if (isValidate) {
+    if (firstValidate && secondValidate && isValidate) {
       addTransaction({
         sender: senderCard.cardNumber,
         recipient: recipientCard.cardNumber,
@@ -144,11 +149,17 @@ export const InputCard = ({
         commission: 0,
         total: 0,
       });
+      setFirstValidate(false);
+      setSecondValidate(false);
     }
   };
 
   return (
-    <Card.Root maxW={"600px"} border={"none"} marginTop={"20px"}>
+    <Card.Root
+      maxW={{ base: "400px", sm: "600px" }}
+      border={"none"}
+      marginTop={"20px"}
+    >
       <Card.Header
         display="grid"
         gridTemplateColumns="140px 1fr 50px"
@@ -156,7 +167,10 @@ export const InputCard = ({
         gap="20px"
         marginBottom="15px"
       >
-        <Card.Description fontSize={"18px"} textAlign="left">
+        <Card.Description
+          fontSize={{ base: "14px", sm: "18px" }}
+          textAlign="left"
+        >
           Сумма перевода
         </Card.Description>
         <Field.Root w={"100%"}>
@@ -166,7 +180,7 @@ export const InputCard = ({
             type="number"
           />
         </Field.Root>
-        <Card.Description fontSize={"18px"} textAlign="right">
+        <Card.Description fontSize={{ base: "14px", sm: "18px" }}>
           РУБ.
         </Card.Description>
       </Card.Header>
@@ -177,17 +191,20 @@ export const InputCard = ({
         alignItems="center"
         gap="20px"
       >
-        <Card.Description fontSize={"18px"} textAlign="left">
-          Комиссия за перевод
+        <Card.Description
+          fontSize={{ base: "14px", sm: "18px" }}
+          textAlign="left"
+        >
+          Комиссия за перевод 5%
         </Card.Description>
-        <Field.Root>
+        <Field.Root w={"100%"}>
           <Input
             value={amount.commission.toFixed(2)}
             readOnly
             color={"black"}
           />
         </Field.Root>
-        <Card.Description fontSize={"18px"} textAlign="right">
+        <Card.Description fontSize={{ base: "14px", sm: "18px" }}>
           РУБ.
         </Card.Description>
       </Card.Body>
@@ -198,15 +215,13 @@ export const InputCard = ({
         alignItems="center"
         gap="20px"
       >
-        <Card.Title fontSize={"18px"} textAlign="left">
+        <Card.Title fontSize={{ base: "14px", sm: "18px" }} textAlign="left">
           Итого с учетом комиссии
         </Card.Title>
-        <Field.Root>
+        <Field.Root w={"100%"}>
           <Input value={amount.total.toFixed(2)} readOnly />
         </Field.Root>
-        <Card.Title fontSize={"18px"} textAlign="right">
-          РУБ.
-        </Card.Title>
+        <Card.Title fontSize={{ base: "14px", sm: "18px" }}>РУБ.</Card.Title>
       </Card.Footer>
       <Field.Root alignItems={"center"} justifyContent="flex-start" px="185px">
         <Button
@@ -215,6 +230,7 @@ export const InputCard = ({
           variant="subtle"
           size="xs"
           onClick={handleConfirm}
+          m={"10px"}
         >
           ПОДТВЕРДИТЬ
         </Button>

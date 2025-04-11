@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { PasswordInput } from "./password-input";
 import { toaster } from "@/components/ui/toaster";
+import { useNavigate } from "react-router-dom";
 
 export const Registration = () => {
   const [formData, setFormData] = useState({
@@ -26,6 +27,8 @@ export const Registration = () => {
     agreement: "",
   });
 
+  const navigate = useNavigate();
+
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
     setFormData({
@@ -33,12 +36,11 @@ export const Registration = () => {
       [name]: value,
     });
 
-    // Очистить ошибку при вводе данных пользователем
-    if (errors[name]) {
+    if (errors.hasOwnProperty(name)) {
       setErrors({
         ...errors,
         [name]: "",
-      });
+      } as typeof errors);
     }
   };
 
@@ -58,7 +60,6 @@ export const Registration = () => {
       agreement: "",
     };
 
-    // Login validation
     if (!formData.login.trim()) {
       newErrors.login = "Логин обязателен";
       isValid = false;
@@ -67,7 +68,6 @@ export const Registration = () => {
       isValid = false;
     }
 
-    // Password validation
     if (!formData.password) {
       newErrors.password = "Пароль обязателен";
       isValid = false;
@@ -76,7 +76,6 @@ export const Registration = () => {
       isValid = false;
     }
 
-    // Валидация совпадения паролей
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = "Подтверждение пароля обязательно";
       isValid = false;
@@ -86,7 +85,6 @@ export const Registration = () => {
       isValid = false;
     }
 
-    // Валидация соглашения
     if (!formData.agreement) {
       newErrors.agreement = "Необходимо согласие на обработку данных";
       isValid = false;
@@ -99,20 +97,19 @@ export const Registration = () => {
   const handleSubmit = () => {
     if (validateForm()) {
       try {
-        console.log("Registration attempt with:", formData);
-
         toaster.create({
           title: "Регистрация выполнена успешно",
           type: "success",
         });
 
-        // Reset form after successful registration
         setFormData({
           login: "",
           password: "",
           confirmPassword: "",
           agreement: false,
         });
+
+        navigate("/main");
       } catch (error) {
         toaster.create({
           title: "Ошибка регистрации",

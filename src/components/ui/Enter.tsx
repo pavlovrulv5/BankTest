@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Card, Field, Input, Stack, Text } from "@chakra-ui/react";
 import { PasswordInput } from "./password-input";
 import { toaster } from "@/components/ui/toaster";
+import { useNavigate } from "react-router-dom";
 
 export const Enter = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,8 @@ export const Enter = () => {
     password: "",
   });
 
+  const navigate = useNavigate();
+
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
     setFormData({
@@ -21,12 +24,11 @@ export const Enter = () => {
       [name]: value,
     });
 
-    // Clear error when user types
-    if (errors[name]) {
+    if (errors.hasOwnProperty(name)) {
       setErrors({
         ...errors,
         [name]: "",
-      });
+      } as typeof errors);
     }
   };
 
@@ -34,7 +36,6 @@ export const Enter = () => {
     let isValid = true;
     const newErrors = { login: "", password: "" };
 
-    // Login validation
     if (!formData.login.trim()) {
       newErrors.login = "Логин обязателен";
       isValid = false;
@@ -43,7 +44,6 @@ export const Enter = () => {
       isValid = false;
     }
 
-    // Password validation
     if (!formData.password) {
       newErrors.password = "Пароль обязателен";
       isValid = false;
@@ -58,21 +58,16 @@ export const Enter = () => {
 
   const handleSubmit = () => {
     if (validateForm()) {
-      // Simulate login attempt
       try {
-        // Here you would typically make an API call for authentication
-        console.log("Login attempt with:", formData);
-
-        // Show success toast
         toaster.create({
           title: "Вход выполнен успешно",
           type: "success",
         });
 
-        // Reset form after successful login
         setFormData({ login: "", password: "" });
+
+        navigate("/main");
       } catch (error) {
-        // Show error toast
         toaster.create({
           title: "Ошибка входа",
           description: "Неверный логин или пароль",
@@ -80,7 +75,6 @@ export const Enter = () => {
         });
       }
     } else {
-      // Show validation error toast
       toaster.create({
         title: "Ошибка валидации",
         description: "Пожалуйста, проверьте введенные данные",

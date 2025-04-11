@@ -22,7 +22,7 @@ function Header() {
       w={"100%"}
       paddingLeft={"30px"}
       paddingRight={"30px"}
-      marginBottom={"80px"}
+      marginBottom={{ base: "10px", md: "80px" }}
     >
       <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
         <Box>
@@ -30,12 +30,11 @@ function Header() {
             <FaFrog />
           </Icon>
         </Box>
-
         <HStack alignItems={"center"}>
           <HStack
             as={"nav"}
-            display={{ base: "none", md: "flex" }}
-            gap={"100px"}
+            display={{ sm: "flex", base: "none" }}
+            gap={["10px", "50px", "100px"]}
           >
             <Link
               href={"/"}

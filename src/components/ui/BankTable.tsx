@@ -1,4 +1,4 @@
-import { Table } from "@chakra-ui/react";
+import { Box, Table } from "@chakra-ui/react";
 import { useTransactionStore } from "@/store/transactionsStore";
 
 const BankTable = () => {
@@ -27,36 +27,40 @@ const BankTable = () => {
   };
 
   return (
-    <Table.Root size="sm" color={"black"}>
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeader>Отправитель</Table.ColumnHeader>
-          <Table.ColumnHeader>Получатель</Table.ColumnHeader>
-          <Table.ColumnHeader textAlign="end">
-            Сумма перевода
-          </Table.ColumnHeader>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {transactions.length === 0 ? (
+    <Box p={["10px", "50px"]}>
+      <Table.Root size={["sm", "md", "lg"]} color={"black"} variant={"outline"}>
+        <Table.Header>
           <Table.Row>
-            <Table.Cell colSpan={3} textAlign="center">
-              Нет данных о транзакциях
-            </Table.Cell>
+            <Table.ColumnHeader>Отправитель</Table.ColumnHeader>
+            <Table.ColumnHeader>Получатель</Table.ColumnHeader>
+            <Table.ColumnHeader textAlign="end">
+              Сумма перевода
+            </Table.ColumnHeader>
           </Table.Row>
-        ) : (
-          transactions.map((transaction) => (
-            <Table.Row key={transaction.id}>
-              <Table.Cell>{formatCardNumber(transaction.sender)}</Table.Cell>
-              <Table.Cell>{formatCardNumber(transaction.recipient)}</Table.Cell>
-              <Table.Cell textAlign="end">
-                {formatAmount(transaction.amount)} ₽
+        </Table.Header>
+        <Table.Body>
+          {transactions.length === 0 ? (
+            <Table.Row>
+              <Table.Cell colSpan={3} textAlign="center">
+                Нет данных о транзакциях
               </Table.Cell>
             </Table.Row>
-          ))
-        )}
-      </Table.Body>
-    </Table.Root>
+          ) : (
+            transactions.map((transaction) => (
+              <Table.Row key={transaction.id}>
+                <Table.Cell>{formatCardNumber(transaction.sender)}</Table.Cell>
+                <Table.Cell>
+                  {formatCardNumber(transaction.recipient)}
+                </Table.Cell>
+                <Table.Cell textAlign="end">
+                  {formatAmount(transaction.amount)} ₽
+                </Table.Cell>
+              </Table.Row>
+            ))
+          )}
+        </Table.Body>
+      </Table.Root>
+    </Box>
   );
 };
 

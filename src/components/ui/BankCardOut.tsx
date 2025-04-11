@@ -1,6 +1,7 @@
-import { Card, Field, Input, Stack } from "@chakra-ui/react";
-import { PasswordInput } from "./password-input";
-import React, { useState, useEffect } from "react";
+import { Card, Field, Input, Stack, InputGroup } from "@chakra-ui/react";
+import { LuCreditCard } from "react-icons/lu";
+import { usePaymentInputs } from "react-payment-inputs";
+import { useState, useEffect } from "react";
 
 export interface BankCardOutProps {
   cardData: {
@@ -24,11 +25,25 @@ export const BankCardOut = ({
   setIsValidate,
 }: BankCardOutProps) => {
   const [errors, setErrors] = useState({
-    cardNumber: "!",
-    expiryMonth: "!",
-    expiryYear: "!",
-    expiryCvv: "!",
+    cardNumber: "",
+    expiryMonth: "",
+    expiryYear: "",
+    expiryCvv: "",
   });
+  const { wrapperProps, getCardNumberProps } = usePaymentInputs();
+  useEffect(() => {
+    const isValid =
+      !errors.cardNumber &&
+      !errors.expiryMonth &&
+      !errors.expiryYear &&
+      !errors.expiryCvv &&
+      cardData.cardNumber.length === 19 &&
+      cardData.expiryMonth.length === 2 &&
+      cardData.expiryYear.length === 2 &&
+      cardData.expiryCvv.length === 3;
+
+    setIsValidate(isValid);
+  }, [errors, cardData, setIsValidate]);
 
   const handleCardNumberChange = (event: { target: { value: string } }) => {
     const value = event.target.value.replace(/[^0-9]/g, "");
@@ -61,7 +76,11 @@ export const BankCardOut = ({
     const value = event.target.value.replace(/[^0-9]/g, "");
     const limitedValue = value.slice(0, 2);
 
-    if (limitedValue.length < 2) {
+    if (
+      limitedValue.length < 2 ||
+      parseInt(limitedValue) > 12 ||
+      parseInt(limitedValue) < 1
+    ) {
       setErrors((prev) => ({
         ...prev,
         expiryMonth: "Неверно указан месяц",
@@ -104,7 +123,7 @@ export const BankCardOut = ({
   const handleCvv = (event: { target: { value: string } }) => {
     const value = event.target.value.replace(/[^0-9]/g, "");
     const limitedValue = value.slice(0, 3);
-    console.log(limitedValue.length);
+
     if (limitedValue.length < 3) {
       setErrors((prev) => ({
         ...prev,
@@ -116,55 +135,47 @@ export const BankCardOut = ({
         expiryCvv: "",
       }));
     }
-    console.log(errors);
+
     setCardData({
       ...cardData,
       expiryCvv: limitedValue,
     });
   };
-  useEffect(() => {
-    if (
-      errors.cardNumber != "" &&
-      errors.expiryCvv != "" &&
-      errors.expiryMonth != "" &&
-      errors.expiryYear != ""
-    ) {
-      setIsValidate(true);
-    } else {
-      setIsValidate(false);
-    }
-  }, [errors]);
 
   return (
-    <Card.Root maxW="sm" w={"1000px"} h={"220px"}>
+    <Card.Root
+      maxW={{ base: "350px", sm: "sm" }}
+      w={"382px"}
+      h={"220px"}
+      marginLeft={{ base: "20px", sm: "0px" }}
+    >
       <Card.Header>
         <Card.Description fontSize={"30px"}>Отправитель</Card.Description>
       </Card.Header>
       <Card.Body>
         <Stack gap="4" w="full">
-          <Field.Root>
-            <Input
-              value={cardData.cardNumber}
-              onChange={handleCardNumberChange}
-              placeholder="Номер карты"
-            />
+          <Field.Root invalid={!!errors.cardNumber}>
+            <InputGroup {...wrapperProps} endElement={<LuCreditCard />}>
+              <Input
+                {...getCardNumberProps()}
+                value={cardData.cardNumber}
+                onChange={handleCardNumberChange}
+                placeholder="Номер карты"
+              />
+            </InputGroup>
           </Field.Root>
         </Stack>
       </Card.Body>
       <Card.Footer flexDirection={"row"} w={"100%"}>
-        <Field.Root
-          flexDirection={"row"}
-          gap={"10px"}
-          alignItems={"center"}
-          marginRight={"20px"}
-        >
+        <Field.Root invalid={!!errors.expiryMonth}>
           <Input
             w={"80px"}
             value={cardData.expiryMonth}
             onChange={handleExpiryMonthChange}
             placeholder="Месяц"
           />
-          /
+        </Field.Root>
+        <Field.Root invalid={!!errors.expiryYear}>
           <Input
             w={"80px"}
             value={cardData.expiryYear}
@@ -172,9 +183,9 @@ export const BankCardOut = ({
             placeholder="Год"
           />
         </Field.Root>
-        <Field.Root>
-          <PasswordInput
-            w={"120px"}
+        <Field.Root invalid={!!errors.expiryCvv}>
+          <Input
+            w={"135px"}
             value={cardData.expiryCvv}
             onChange={handleCvv}
             placeholder="CVV"
